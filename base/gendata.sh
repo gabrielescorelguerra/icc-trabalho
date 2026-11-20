@@ -32,6 +32,9 @@ make clean
 make
 rm -f ${TEMPOS}
 
+# execucao de aquecimento (descartada): evita que o 1o grupo medido seja mais lento
+printf "%s\n%s\n%s\n%s\n" "32" "$X0" "$EPS" "$MAXIT" | likwid-perfctr -O -C ${CPU} -g MEM -m ./${PROG} >/dev/null 2>&1
+
 
 for m in ${METRICA}
 do

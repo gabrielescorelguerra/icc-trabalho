@@ -33,11 +33,11 @@ int newton(double *X, double epsilon, int n, int MAXIT) {
         // Calcula F(X) e J(X) para a iteracao atual
         calcF(F, X, n);
 
-        double tempoInicJ = timestamp();
         LIKWID_MARKER_START("calcJ");
+        double tempoInicJ = timestamp();
         calcJ(Jdiag, X, n);
-        LIKWID_MARKER_STOP("calcJ");
         tempoJ += timestamp() - tempoInicJ;
+        LIKWID_MARKER_STOP("calcJ");
 
         // inverte o sinal de F para resolver o sistema linear J * deltaX = -F
         for (int i = 0; i < n; ++i) {
@@ -45,11 +45,11 @@ int newton(double *X, double epsilon, int n, int MAXIT) {
         }
 
         // resolve o sistema linear J * deltaX = -F para encontrar deltaX por eliminacao de Gauss
-        double tempoInicSisLinear = timestamp();
         LIKWID_MARKER_START("eliminacaoGauss");
+        double tempoInicSisLinear = timestamp();
         eliminacaoGauss(Jdiag, S, F, n);
-        LIKWID_MARKER_STOP("eliminacaoGauss");
         tempo_sisLinear += timestamp() - tempoInicSisLinear;
+        LIKWID_MARKER_STOP("eliminacaoGauss");
 
         // Atualiza X com as soluções aproximadas.
         for (int i = 0; i < n; ++i) {

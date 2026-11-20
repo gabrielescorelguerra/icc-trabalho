@@ -15,7 +15,7 @@ METRICA="MEM L2CACHE FLOPS_DP FLOPS_AVX"
 
 # tamanhos a serem testados
 # apenas ate 4000 devido ao tempo de execucao muito elevado
-TAMANHOS="32 64 128 256 512 1000 2000" #4000 # 8000 9000 10000 20000"
+TAMANHOS="32 64 128 256 512 1000 2000 4000 8000 9000 10000 20000"
 
 # entradas do broyden
 X0=-1
@@ -31,6 +31,9 @@ likwid-setFrequencies -g performance -c ${CPU}
 make clean
 make
 rm -f ${TEMPOS}
+
+# execucao de aquecimento (descartada): evita que o 1o grupo medido seja mais lento
+printf "%s\n%s\n%s\n%s\n" "32" "$X0" "$EPS" "$MAXIT" | likwid-perfctr -O -C ${CPU} -g MEM -m ./${PROG} >/dev/null 2>&1
 
 
 for m in ${METRICA}

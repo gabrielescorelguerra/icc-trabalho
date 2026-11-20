@@ -34,9 +34,17 @@ trechos = ("newton", "calcJ", "eliminacaoGauss")
 DIR_BASE = "../base/resultados"
 DIR_OTIM = "./resultados"
 
-# tamanhos na MESMA ordem em que foram rodados no gendata.sh (TAMANHOS)
-tamanhos_base = (32, 64, 128)
-tamanhos_otim = (32, 64, 128, 256)
+
+def lerTamanhos(arquivo):
+    """Tamanhos testados, na ordem em que foram rodados (1a coluna do
+    Tempos.csv, sem repetir: cada N aparece uma vez por grupo do likwid)."""
+    ns = []
+    with open(arquivo) as f:
+        for linha in f:
+            p = linha.split(",")[0]
+            if p.isdigit() and int(p) not in ns:
+                ns.append(int(p))
+    return ns
 
 
 def lerDados(arquivo, trecho, campo, tamanhos):
@@ -122,9 +130,9 @@ def gera_grafico(series, ylabel, titulo, arquivo, ylog=False):
 
 
 def main():
-    versoes = (
-        ("base", DIR_BASE, tamanhos_base),
-        ("otim", DIR_OTIM, tamanhos_otim),
+    versoes = tuple(
+        (nome, d, lerTamanhos(f"{d}/Tempos.csv"))
+        for nome, d in (("base", DIR_BASE), ("otim", DIR_OTIM))
     )
 
     for trecho in trechos:
