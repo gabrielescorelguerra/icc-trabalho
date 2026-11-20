@@ -31,8 +31,10 @@ estilos = ("-", "--")
 # nomes dos marcadores likwid usados no codigo C
 trechos = ("newton", "calcJ", "eliminacaoGauss")
 
-DIR_BASE = "../base/resultados"
-DIR_OTIM = "./resultados"
+RAIZ = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+DIR_BASE = os.path.join(RAIZ, "base", "resultados")
+DIR_OTIM = os.path.join(RAIZ, "otimizado", "resultados")
+DIR_GRAFICOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "graficos")
 
 
 def lerTamanhos(arquivo):
@@ -50,8 +52,9 @@ def lerTamanhos(arquivo):
 def lerDados(arquivo, trecho, campo, tamanhos):
     """Le o log de um grupo do likwid e devolve {N: valor} do campo no trecho.
 
-    O log nao diz qual N gerou cada bloco, entao o i-esimo valor encontrado
-    do trecho e associado ao i-esimo tamanho de 'tamanhos'.
+    O log nao diz qual N gerou cada bloco; cada tamanho de 'tamanhos' foi
+    rodado o mesmo numero de vezes, em sequencia, entao os valores sao
+    agrupados por tamanho e e devolvida a media de cada grupo.
     """
     valores = []
     dentro = False  # True enquanto estamos na tabela de metricas do trecho
@@ -66,14 +69,20 @@ def lerDados(arquivo, trecho, campo, tamanhos):
                 valores.append(float(linha.split(",")[1]))
                 dentro = False
 
-    # verifica se o numero de valores encontrados bate com o numero de tamanhos
-    if len(valores) != len(tamanhos):
+    # cada tamanho foi rodado 'reps' vezes seguidas; a media das repeticoes
+    # de cada tamanho e o valor plotado
+    reps = len(valores) // len(tamanhos)
+    if reps == 0 or len(valores) != reps * len(tamanhos):
         print(
             f"AVISO: {arquivo} ({trecho}): {len(valores)} valores "
             f"para {len(tamanhos)} tamanhos"
         )
+        tamanhos = tamanhos[: len(valores) // max(reps, 1)] if reps else []
 
-    return dict(zip(tamanhos, valores))
+    return {
+        n: sum(valores[i * reps:(i + 1) * reps]) / reps
+        for i, n in enumerate(tamanhos)
+    }
 
 
 def lerTempos(arquivo):
@@ -101,7 +110,7 @@ def lerTempos(arquivo):
 
 def gera_grafico(series, ylabel, titulo, arquivo, ylog=False):
     """series: lista de (legenda, {N: valor}, cor, estilo de linha)."""
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(9, 5))
     Ns = set()
 
     for legenda, dados, cor, estilo in series:
@@ -115,7 +124,7 @@ def gera_grafico(series, ylabel, titulo, arquivo, ylog=False):
     if ylog:
         ax.set_yscale("log")
     ax.set_xticks(Ns)
-    ax.set_xticklabels(Ns)  # mostra os N reais, não 10^x
+    ax.set_xticklabels(Ns, rotation=90, fontsize=8)  # mostra os N reais, não 10^x
     ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())  # sem ticks menores
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())  # evita sobreposicao
     ax.set_xlabel("N")
@@ -124,8 +133,8 @@ def gera_grafico(series, ylabel, titulo, arquivo, ylog=False):
     ax.legend()
     ax.grid(True)
 
-    os.makedirs("graficos", exist_ok=True)
-    fig.savefig(f"graficos/{arquivo}.png", dpi=150)  # salva como imagem
+    os.makedirs(DIR_GRAFICOS, exist_ok=True)
+    fig.savefig(os.path.join(DIR_GRAFICOS, f"{arquivo}.png"), dpi=150, bbox_inches="tight")  # salva como imagem
     plt.close(fig)
 
 

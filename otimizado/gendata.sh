@@ -22,6 +22,9 @@ X0=-1
 EPS=0
 MAXIT=25
 
+# numero de execucoes de cada teste (o grafico usa a media)
+REPS=10
+
 # diretorio de saida
 mkdir -p ${DATA_DIR}
 
@@ -45,10 +48,12 @@ do
     
     for n in $TAMANHOS
     do
+      for rep in $(seq 1 ${REPS})
+      do
         # temporario que vai receber os resultados
         LIKWID_OUT="${DATA_DIR}/${m}_${n}.txt"
         
-        echo "n: ${n} , x0: ${X0}, EPS: ${EPS}, MAXIT: ${MAXIT} --->>  $m: ./${PROG}" >/dev/tty
+        echo "n: ${n} , x0: ${X0}, EPS: ${EPS}, MAXIT: ${MAXIT}, rep: ${rep}/${REPS} --->>  $m: ./${PROG}" >/dev/tty
 
         # executa o programa com o likwid, redirecionando a saida para um arquivo temporario
         printf "%s\n%s\n%s\n%s\n" "$n" "$X0" "$EPS" "$MAXIT" | likwid-perfctr -O -C ${CPU} -g ${m} -o ${LIKWID_OUT} -m ./${PROG} \
@@ -57,6 +62,7 @@ do
         cat ${LIKWID_OUT} >> ${LIKWID_LOG}
 
         rm -f ${LIKWID_OUT}
+      done
     done
 done
 
