@@ -15,7 +15,7 @@ METRICA="MEM L2CACHE FLOPS_DP FLOPS_AVX"
 
 # tamanhos a serem testados
 # apenas ate 4000 devido ao tempo de execucao muito elevado
-TAMANHOS="32 64 128 256 512 1000 2000" #4000 # 8000 9000 10000 20000"
+TAMANHOS="32 64 128 256 512 1000 2000 4000" # 8000 9000 10000 20000"
 
 # entradas do broyden
 X0=-1
