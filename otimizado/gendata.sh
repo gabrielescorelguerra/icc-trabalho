@@ -1,7 +1,8 @@
 #!/bin/bash
 
 CMD_DIR=`dirname $0`
-PROG=${1:-broyden}
+# executavel gerado pelo Makefile da raiz
+PROG=${1:-../broyden}
 
 # core usado pelo likwid
 CPU=${2:-3}
@@ -31,12 +32,12 @@ mkdir -p ${DATA_DIR}
 likwid-setFrequencies -g performance -c ${CPU}
 
 # remove os arquivos gerados na ultima compilacao e compila novamente
-make clean
-make
+make -C .. clean
+make -C ..
 rm -f ${TEMPOS}
 
 # execucao de aquecimento (descartada): evita que o 1o grupo medido seja mais lento
-printf "%s\n%s\n%s\n%s\n" "32" "$X0" "$EPS" "$MAXIT" | likwid-perfctr -O -C ${CPU} -g MEM -m ./${PROG} >/dev/null 2>&1
+printf "%s\n%s\n%s\n%s\n" "32" "$X0" "$EPS" "$MAXIT" | likwid-perfctr -O -C ${CPU} -g MEM -m ${PROG} >/dev/null 2>&1
 
 
 for m in ${METRICA}
@@ -53,10 +54,10 @@ do
         # temporario que vai receber os resultados
         LIKWID_OUT="${DATA_DIR}/${m}_${n}.txt"
         
-        echo "n: ${n} , x0: ${X0}, EPS: ${EPS}, MAXIT: ${MAXIT}, rep: ${rep}/${REPS} --->>  $m: ./${PROG}" >/dev/tty
+        echo "n: ${n} , x0: ${X0}, EPS: ${EPS}, MAXIT: ${MAXIT}, rep: ${rep}/${REPS} --->>  $m: ${PROG}" >/dev/tty
 
         # executa o programa com o likwid, redirecionando a saida para um arquivo temporario
-        printf "%s\n%s\n%s\n%s\n" "$n" "$X0" "$EPS" "$MAXIT" | likwid-perfctr -O -C ${CPU} -g ${m} -o ${LIKWID_OUT} -m ./${PROG} \
+        printf "%s\n%s\n%s\n%s\n" "$n" "$X0" "$EPS" "$MAXIT" | likwid-perfctr -O -C ${CPU} -g ${m} -o ${LIKWID_OUT} -m ${PROG} \
                 | awk '/^###########$/ {f = !f; next} f' | paste -sd, - | sed "s/^/${n},/" >> ${TEMPOS}
             
         cat ${LIKWID_OUT} >> ${LIKWID_LOG}

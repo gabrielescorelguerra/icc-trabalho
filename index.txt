@@ -1,4 +1,7 @@
 Arquivos e Diretorios principais:
 
-./baseline: codigo sem otimizacoes e resultados de seus procedimentos
-./otimizado: código otimizado, contendo também script para gerar gráficos
+./Makefile: compila APENAS a versao otimizada (fontes em ./otimizado) e gera o executavel ./broyden na raiz.
+            Uso: make (compila) e make clean (limpa)
+./base: codigo sem otimizacoes e resultados de seus procedimentos (possui Makefile proprio)
+./otimizado: codigo otimizado, script gendata.sh para gerar os dados e resultados dos testes
+./genplot: script genplot.py, que gera os graficos (em ./genplot/graficos) a partir dos resultados de base e otimizado
