@@ -80,11 +80,10 @@ int newton(double *X, double epsilon, int n, int MAXIT) {
 
     LIKWID_MARKER_STOP("newton");
   
-    return 0; // Retorna 0 para indicar sucesso (ou outro valor para indicar falha)
+    return 0;
 }
 
 // define o calculo da norma do vetor V de tamanho n
-// Aqui: norma infinito
 double norma(double *V, int n) {
   double max = fabs(V[0]);
   for (int i = 1; i < n; ++i)

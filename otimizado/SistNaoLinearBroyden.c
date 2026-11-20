@@ -1,4 +1,3 @@
-// calcula o valor de cada função do SNLB de dimensao n, com o vetor de variáveis X -> resultado em F
 void calcF(double * restrict F, double * restrict X, int n) {
     F[0] = (-2 * X[0] * X[0]) + (3 * X[0]) + (-2 * X[1]) + 1;
 
@@ -10,7 +9,6 @@ void calcF(double * restrict F, double * restrict X, int n) {
 }
 
 
-// calcula o valor da matriz Jacobiana com o vetor de variáveis X -> resultado em JX
 void calcJ(double * restrict Jdiag, double * restrict X, int n) {
     // calcula as derivadas parciais de cada funcão do SNL com o vetor de variáveis X
     Jdiag[0] = (-4 * X[0]) + 3;

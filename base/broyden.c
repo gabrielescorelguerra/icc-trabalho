@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <likwid.h>
 
-// #include "utils.h"
 #include "NewtonSNLB.h"
 
 /* 
@@ -22,7 +21,6 @@ int main() {
     scanf("%lf", &epsilon);
     scanf("%d", &MAXIT);
 
-    // inicializa o LIKWID
     LIKWID_MARKER_INIT;
 
     // aloca memória para o vetor de variáveis, inicializando todas com x0
@@ -36,7 +34,6 @@ int main() {
     newton(X, epsilon, n, MAXIT);
     LIKWID_MARKER_STOP("newton");
 
-    // finaliza o LIKWID
     LIKWID_MARKER_CLOSE;
 
     // libera a memória alocada para o vetor de variáveis

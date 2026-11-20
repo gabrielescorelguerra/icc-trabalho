@@ -71,7 +71,6 @@ int newton(double *X, double epsilon, int n, int MAXIT) {
 
     // imprime tempos
     tempoTotal = timestamp() - tempoTotal;
-
     printf("##########\n%.15g\n%.15g\n%.15g\n###########\n", tempoTotal, tempoJ, tempo_sisLinear);
 
     // Libera a memória alocada para F, J e S
@@ -82,7 +81,7 @@ int newton(double *X, double epsilon, int n, int MAXIT) {
     free(J);
     free(S);
   
-    return 0; // Retorna 0 para indicar sucesso (ou outro valor para indicar falha)
+    return 0;
 }
 
 // define o calculo da norma do vetor V de tamanho n

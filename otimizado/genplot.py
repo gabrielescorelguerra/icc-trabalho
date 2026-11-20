@@ -1,15 +1,5 @@
 #! /usr/bin/env python3
 
-# Descomente as 2 linhas abaixo se quiser que Python procure por modulos
-# em outros diretórios que não os do sistema e o diretório corrente.
-## import sys, os
-## sys.path.extend([ '~/lib/python', '.', '..' ])
-# Ou em seu ambiente shell, crie e exporte a variavel de ambiente PYTHONPATH.
-# Coloque a linha abaixo em seu arquivo '~/.bashrc' ou '~/.profile:
-## export PYTHONPATH="${HOME}/lib/python:.:.."
-#
-# import numpy as np
-# import matplotlib.pyplot as plt
 import os
 import re
 
@@ -17,19 +7,7 @@ import matplotlib
 
 matplotlib.use("Agg")  # so salva as imagens, nao tenta abrir janela
 import matplotlib.pyplot as plt
-
-#  "CACHE" : "data cache misses",
-#  "CACHE" : "data cache miss ratio",
-#  "CACHE" : "data cache miss rate",
-#  "L2CACHE" : "L2 miss ratio",
-#  "L2CACHE" : "L2 miss rate",
-#  "L3" : "L3 bandwidth \[*MBytes/s\]*",
-#  "MEM" : "Memory bandwidth \[*MBytes/s\]*",
-#  "MEM" : "Memory read bandwidth",
-#  "MEM" : "Memory write bandwidth",
-#  "TIME" : "Runtime \(RDTSC\) \[*s\]*",
-#  "ENERGY" : "Power \[*W\]*"
-
+import matplotlib.ticker
 
 # nome dos campos que serao lidos dos arquivos de saida do likwid-perfctr -O
 campos = {
@@ -39,9 +17,7 @@ campos = {
     "MEM": r"Memory bandwidth \[*MBytes/s\]*",
 }
 
-# testes do likwid, um grafi-co por trecho cada.
-# nome: (texto do eixo y, [(rotulo da linha, grupo do likwid)])
-# o teste de FLOPS junta os grupos FLOPS_DP e FLOPS_AVX no mesmo grafico
+# testes considerados
 testes = {
     "MEM": ("Memory bandwidth [MBytes/s]", [("", "MEM")]),
     "L2CACHE": ("L2 miss ratio", [("", "L2CACHE")]),
@@ -63,12 +39,6 @@ tamanhos_base = (32, 64, 128)
 tamanhos_otim = (32, 64, 128, 256)
 
 
-# 'STRUCT,Info' inicia Região
-# 'TABLE,Region.*Metric,<metrica>' inicia metrica
-# '<string>' inicia linha '<string>.*,<valor>,.*', onde
-# <string> é obtido a partr de 'campo[]', tendo <metrica> como chave
-
-
 def lerDados(arquivo, trecho, campo, tamanhos):
     """Le o log de um grupo do likwid e devolve {N: valor} do campo no trecho.
 
@@ -81,14 +51,14 @@ def lerDados(arquivo, trecho, campo, tamanhos):
     with open(arquivo) as f:
         for linha in f:
             if linha.startswith("TABLE"):
-                # ex: "TABLE,Region calcJ,Group 1 Metric,MEM,10"
                 partes = linha.split(",")
                 dentro = partes[1] == "Region " + trecho and "Metric" in partes[2]
+
             elif dentro and re.match(campo, linha):
-                # ex: "Memory bandwidth [MBytes/s],2633.2558,"
                 valores.append(float(linha.split(",")[1]))
                 dentro = False
 
+    # verifica se o numero de valores encontrados bate com o numero de tamanhos
     if len(valores) != len(tamanhos):
         print(
             f"AVISO: {arquivo} ({trecho}): {len(valores)} valores "
@@ -138,6 +108,8 @@ def gera_grafico(series, ylabel, titulo, arquivo, ylog=False):
         ax.set_yscale("log")
     ax.set_xticks(Ns)
     ax.set_xticklabels(Ns)  # mostra os N reais, não 10^x
+    ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())  # sem ticks menores
+    ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())  # evita sobreposicao
     ax.set_xlabel("N")
     ax.set_ylabel(ylabel)
     ax.set_title(titulo)

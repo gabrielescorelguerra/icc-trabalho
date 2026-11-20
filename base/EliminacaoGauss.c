@@ -8,7 +8,7 @@ void eliminacaoGauss(double **A, double *X, double *b, int n) {
   retrossubs(A, X, b, n);
 }
 
-// triangularização
+
 void triang(double **A, double *b, int n) {
     for (int i = 0; i < n; ++i) {
     pivot(A, b, i, n);
@@ -24,7 +24,7 @@ void triang(double **A, double *b, int n) {
   }
 }
 
-// retrossubstituição
+
 void retrossubs(double **A, double *X, double *b, int n) {
     // resolve o sistema triangular superior AX = b
     for (int i = n-1; i >=0; --i) {
@@ -35,9 +35,8 @@ void retrossubs(double **A, double *X, double *b, int n) {
     }
 }
 
-// Efetua pivoteamento parcial na linha i
+
 void pivot(double **A, double *b, int i, int n) {
-    // encontra o maior valor absoluto na coluna i a partir da linha i
     double max = fabs(A[i][i]);
     int max_i = i;
 
